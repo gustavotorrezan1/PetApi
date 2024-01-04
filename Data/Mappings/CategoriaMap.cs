@@ -8,8 +8,8 @@ public class CategoriaMap : IEntityTypeConfiguration<Categoria>
     public void Configure(EntityTypeBuilder<Categoria> builder)
     {
         // Tabela
-        builder.HasData("dbo.Categoria");
-
+        builder.ToTable("dbo.Categoria");
+        
         // Chave Primária
         builder.HasKey(x => x.Id);
 

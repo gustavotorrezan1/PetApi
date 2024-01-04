@@ -15,9 +15,6 @@ public class PetDbContext : DbContext
     public DbSet<SubCategoria> SubCategorias { get; set; }
     public DbSet<UnidadeMedida> UnidadeMedidas { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-           => options.UseSqlServer("Server=localhost,1433;Database=PetV1;User ID=sa;Password=1q2w3e4r@#$");
-
     //Local do mapping
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
