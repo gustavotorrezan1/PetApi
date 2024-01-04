@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace PetApi.Controllers
-{
+namespace PetApi.Controllers;
+
     [ApiController]
     [Route("")]
     public class HomeController : Controller
@@ -12,4 +12,4 @@ namespace PetApi.Controllers
             return Ok();
         }
     }
-}
+
