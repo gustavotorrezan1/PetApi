@@ -9,7 +9,7 @@ namespace PetApi.Controllers;
         [HttpGet("")]
         public IActionResult Get()
         {
-            return Ok();
+            return Ok("Tudo OK");
         }
     }
 

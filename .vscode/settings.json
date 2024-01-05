@@ -1,0 +1,5 @@
+{
+    "dataworkspace.excludedProjects": [
+        "PetV2/PetV2.sqlproj"
+    ]
+}
