@@ -10,12 +10,7 @@ namespace PetApi.Controllers;
 public class CategoriaController : ControllerBase    
 {
     private readonly PetDbContext _context;
-    List<string> erros = [
-        "01xE1 - Categoria(s) não encontrados",
-        "01xE2 - Falha interna no servidor"
-    ];
-    
- 
+
     public CategoriaController(PetDbContext context)
     {
         _context = context;
@@ -29,13 +24,13 @@ public class CategoriaController : ControllerBase
         {
             if (_context.Categorias == null)
             {
-                return NotFound(erros[1]);
+                return NotFound();
             }
             return await _context.Categorias.ToListAsync();
         }
-        catch
+        catch(Exception e)
         {
-            return StatusCode(500, "01xE2 - Falha interna no servidor");
+            return StatusCode(500, e);
         }
        
     }
@@ -48,13 +43,13 @@ public class CategoriaController : ControllerBase
             var Categoria = await _context.Categorias.FindAsync(id);
 
             if (Categoria == null)
-                return NotFound(erros[1]);
+                return NotFound();
             
             return Categoria;
         }
         catch 
         {
-            return StatusCode(500, erros[2]);
+            return StatusCode(500);
         }
        
     }
@@ -69,14 +64,14 @@ public class CategoriaController : ControllerBase
         _context.Categorias.Add(categoria);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetCategoria", new { id = categoria.Id }, categoria);
+        return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
     }
 
     // PUT:
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, Categoria categoria)
     {
-        if (id != categoria.Id)
+        if (id != categoria.CategoriaId)
         {
             return BadRequest("01xE4 - Id diferente do Id da categoria");
         }
@@ -121,7 +116,7 @@ public class CategoriaController : ControllerBase
     }
     private bool CategoriaExists(int id)
     {
-        return (_context.Categorias?.Any(e => e.Id == id)).GetValueOrDefault();
+        return (_context.Categorias?.Any(e => e.CategoriaId == id)).GetValueOrDefault();
     }
 
 
