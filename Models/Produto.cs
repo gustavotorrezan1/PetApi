@@ -7,7 +7,7 @@
         public double PrecoCusto { get; set; }
         public double PrecoVenda { get; set; }
         public string CodBarras { get; set; }
-        public bool Ativo { get; set; } = true;
+        public int Ativo { get; set; } = 1;
         public UnidadeMedida UnidadeMedida { get; set; }
         public SubCategoria SubCategoria { get; set; }
         public Categoria Categoria { get; set; }
