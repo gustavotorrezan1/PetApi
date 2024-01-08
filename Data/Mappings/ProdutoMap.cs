@@ -26,5 +26,14 @@ public class ProdutoMap : IEntityTypeConfiguration<Produto>
             .HasColumnType("BIT")
             .HasMaxLength(1)
             .IsRequired();
+
+        builder
+            .HasOne(x => x.Categoria);
+
+        builder
+            .HasOne(x => x.SubCategoria);
+            
+        builder
+            .HasOne(x => x.UnidadeMedida);
     }
 }

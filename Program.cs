@@ -22,7 +22,7 @@ switch (Banco)
 
     case "2":
         builder.Services.AddDbContext<PetDbContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("sqlserver2")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("sqlserver2")));
         break;
 
     default:
