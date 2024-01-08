@@ -12,12 +12,8 @@ public class CategoriaMap : IEntityTypeConfiguration<Categoria>
             .ValueGeneratedOnAdd()
             .UseIdentityColumn();
 
-        builder.Property(x => x.Nome)
-            .HasColumnType("NVARCHAR")
-            .IsRequired();
+        builder.Property(x => x.Nome);
 
-        builder.Property(x => x.Ativo)
-            .HasMaxLength(1)
-            .IsRequired();
+        builder.Property(x => x.Ativo);
     }
 }
