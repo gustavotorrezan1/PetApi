@@ -9,6 +9,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<PetDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("sqlserver1")));
 
 Console.WriteLine("Selecione o banco a ser usado \n 1 - SqlServer 1 \n 2 - SqlServer 2");
 var Banco = Console.ReadLine();
@@ -29,6 +31,7 @@ switch (Banco)
         Console.WriteLine("Banco Inválido");
         break;
 }
+
 
 
 var app = builder.Build();

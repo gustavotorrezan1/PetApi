@@ -19,6 +19,9 @@ public class PetDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CategoriaMap());
+        modelBuilder.ApplyConfiguration(new ProdutoMap());
+        modelBuilder.ApplyConfiguration(new UnidadeMedidaMap());
+        modelBuilder.ApplyConfiguration(new SubCategoriaMap());
     }
 }
 

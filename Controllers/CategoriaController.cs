@@ -103,13 +103,13 @@ public class CategoriaController : ControllerBase
         {
             return NotFound();
         }
-        var todo = await _context.Categorias.FindAsync(id);
-        if (todo == null)
+        var categoria = await _context.Categorias.FindAsync(id);
+        if (categoria == null)
         {
             return NotFound();
         }
 
-        _context.Categorias.Remove(todo);
+        _context.Categorias.Remove(categoria);
         await _context.SaveChangesAsync();
 
         return NoContent();
