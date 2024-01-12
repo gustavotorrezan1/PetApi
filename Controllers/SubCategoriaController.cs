@@ -41,7 +41,6 @@ public class SubCategoriaController : ControllerBase
         try
         {
             var SubCategoria = await _context.SubCategorias.FindAsync(id);
-            var Categoria = await _context.Categorias.FindAsync(SubCategoria.CategoriaId);
 
             if (SubCategoria == null)
                 return NotFound();

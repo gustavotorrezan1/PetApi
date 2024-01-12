@@ -7,7 +7,9 @@ public class ProdutoMap : IEntityTypeConfiguration<Produto>
 {
     public void Configure(EntityTypeBuilder<Produto> builder)
     {
-        builder.ToTable("Produto"); // Define qual a tabela
+       builder.Property(x => x.ProdutoId)
+                .ValueGeneratedOnAdd()
+                .UseIdentityColumn();
         
         // Chave Primária
         builder.HasKey(x => x.ProdutoId);

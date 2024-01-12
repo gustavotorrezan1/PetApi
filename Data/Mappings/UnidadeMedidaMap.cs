@@ -9,6 +9,9 @@ public class UnidadeMedidaMap : IEntityTypeConfiguration<UnidadeMedida>
     {
         // Chave Primária
         builder.HasKey(x => x.UnidadeMedidaId);
+        builder.Property(x => x.UnidadeMedidaId)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
 
         builder.Property(x => x.Nome)
             .HasColumnType("NVARCHAR")
