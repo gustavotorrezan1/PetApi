@@ -7,17 +7,8 @@ public class CategoriaMap : IEntityTypeConfiguration<Categoria>
 {
     public void Configure(EntityTypeBuilder<Categoria> builder)
     {
+        builder.ToTable("Categoria");
         builder.HasKey(x => x.CategoriaId);
-        builder.Property(x => x.CategoriaId)
-            .ValueGeneratedOnAdd()
-            .UseIdentityColumn();
-
-        builder.Property(x => x.Nome)
-            .HasColumnType("NVARCHAR")
-            .IsRequired();
-
-        builder.Property(x => x.Ativo)
-            .HasMaxLength(1)
-            .IsRequired();
+       
     }
 }

@@ -7,33 +7,10 @@ public class ProdutoMap : IEntityTypeConfiguration<Produto>
 {
     public void Configure(EntityTypeBuilder<Produto> builder)
     {
+        builder.ToTable("Produto"); // Define qual a tabela
+        
         // Chave Primária
         builder.HasKey(x => x.ProdutoId);
-        builder.Property(x => x.ProdutoId)
-            .ValueGeneratedOnAdd()
-            .UseIdentityColumn();
-
-        builder.Property(x => x.Nome)
-            .HasColumnType("NVARCHAR")
-            .IsRequired()
-            .HasMaxLength(256);
-
-        builder.Property(x => x.CodBarras)
-            .HasColumnType("NVARCHAR")
-            .HasMaxLength(50);
-
-        builder.Property(x => x.Ativo)
-            .HasColumnType("BIT")
-            .HasMaxLength(1)
-            .IsRequired();
-
-        builder
-            .HasOne(x => x.Categoria);
-
-        builder
-            .HasOne(x => x.SubCategoria);
-            
-        builder
-            .HasOne(x => x.UnidadeMedida);
+      
     }
 }
