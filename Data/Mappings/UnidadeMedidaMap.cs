@@ -8,8 +8,16 @@ public class UnidadeMedidaMap : IEntityTypeConfiguration<UnidadeMedida>
     public void Configure(EntityTypeBuilder<UnidadeMedida> builder)
     {
         // Chave Primária
-        builder.ToTable("UnidadeMedida");
         builder.HasKey(x => x.UnidadeMedidaId);
-        
+
+        builder.Property(x => x.Nome)
+            .HasColumnType("NVARCHAR")
+            .HasMaxLength(256);
+
+        builder.Property(x => x.Ativo)
+            .HasColumnType("INT")
+            .HasMaxLength(1)
+            .HasDefaultValue(1);
+
     }
 }

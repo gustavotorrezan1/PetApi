@@ -11,6 +11,27 @@ public class ProdutoMap : IEntityTypeConfiguration<Produto>
         
         // Chave Primária
         builder.HasKey(x => x.ProdutoId);
-      
+
+        builder.Property(x => x.Nome)
+            .HasColumnType("NVARCHAR")  
+            .HasMaxLength(256);
+
+        builder.Property(x => x.PrecoCusto)
+            .HasColumnType("FLOAT");
+            
+        builder.Property(x => x.PrecoVenda)
+            .HasColumnType("FLOAT");
+
+        builder.Property(x => x.CodBarras)
+            .HasColumnType("NVARCHAR")
+            .HasMaxLength(30);
+
+        builder.Property(x => x.Ativo)
+            .HasColumnType("INT")
+            .HasMaxLength(1)
+            .HasDefaultValue(1);
+
+
+
     }
 }
