@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels.CategoriaView;
 
 namespace PetApi.Controllers;
 
@@ -56,15 +57,21 @@ public class CategoriaController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
+    public async Task<ActionResult<Categoria>> PostCategoria(CreateCategoriaViewModel categoria)
     {
         if (_context.Categorias == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Categoria' é nula.");
         
-        _context.Categorias.Add(categoria);
+        var categoriaV = new Categoria{
+            CategoriaId = 0,
+            Ativo = 0,
+            Nome = categoria.Nome
+        };
+
+        _context.Categorias.Add(categoriaV);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
+        return CreatedAtAction("GetCategoria", new { id = categoriaV.CategoriaId }, categoriaV);
     }
 
     // PUT:
