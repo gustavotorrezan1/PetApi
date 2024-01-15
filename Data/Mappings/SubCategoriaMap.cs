@@ -21,6 +21,8 @@ public class SubCategoriaMap : IEntityTypeConfiguration<SubCategoria>
            .HasMaxLength(1)
            .HasDefaultValue(1);
 
+        
+
 
     }
 }

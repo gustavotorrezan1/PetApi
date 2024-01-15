@@ -26,6 +26,7 @@ public class SubCategoriaController : ControllerBase
             {
                 return NotFound();
             }
+            
             return await _context.SubCategorias.ToListAsync();
         }
         catch(Exception e)
@@ -40,12 +41,14 @@ public class SubCategoriaController : ControllerBase
     {
         try
         {
-            var SubCategoria = await _context.SubCategorias.FindAsync(id);
-
-            if (SubCategoria == null)
+            var subCategoria = await _context.SubCategorias.FindAsync(id);
+            var categoria = await _context.Categorias.FindAsync(subCategoria.CategoriaId);
+            subCategoria.Categoria = categoria;
+            
+            if (subCategoria == null)
                 return NotFound();
             
-            return SubCategoria;
+            return subCategoria;
         }
         catch 
         {
@@ -60,7 +63,14 @@ public class SubCategoriaController : ControllerBase
     {
         if (_context.SubCategorias == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.SubCategoria' é nula.");
-        
+
+        var categoria = await _context.Categorias.FindAsync(subcategoria.CategoriaId);
+
+        if(categoria == null)
+            return Problem("Categoria não existe");
+
+        subcategoria.CategoriaId = categoria.CategoriaId;
+        subcategoria.Categoria = categoria;
         _context.SubCategorias.Add(subcategoria);
         await _context.SaveChangesAsync();
 

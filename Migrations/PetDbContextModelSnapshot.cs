@@ -107,7 +107,7 @@ namespace PetApi.Migrations
                         .HasColumnType("INT")
                         .HasDefaultValue(1);
 
-                    b.Property<int?>("CategoriaId")
+                    b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
@@ -171,15 +171,12 @@ namespace PetApi.Migrations
             modelBuilder.Entity("PetApi.Models.SubCategoria", b =>
                 {
                     b.HasOne("PetApi.Models.Categoria", "Categoria")
-                        .WithMany("Subcategorias")
-                        .HasForeignKey("CategoriaId");
+                        .WithMany()
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Categoria");
-                });
-
-            modelBuilder.Entity("PetApi.Models.Categoria", b =>
-                {
-                    b.Navigation("Subcategorias");
                 });
 #pragma warning restore 612, 618
         }
