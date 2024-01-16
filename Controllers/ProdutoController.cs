@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels.CategoriaVM;
 using PetApi.ViewModels.ProdutoVM;
 
 namespace PetApi.Controllers;
@@ -60,7 +61,7 @@ public class ProdutoController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<Produto>> PostProduto(PostProdutoVM produtoVM)
+    public async Task<ActionResult<Produto>> PostProduto(CreateProdutoVM produtoVM)
     {
         if (_context.Produtos == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Produto' é nula.");
@@ -87,8 +88,16 @@ public class ProdutoController : ControllerBase
 
     // PUT:
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, Produto produto)
+    public async Task<IActionResult> Put(int id, UpdateProdutoVM produtoVM)
     {
+        var produto = new Produto
+        {
+            Ativo = produtoVM.Ativo,
+            Nome = produtoVM.Nome,
+            PrecoCusto = produtoVM.PrecoCusto,
+            PrecoVenda = produtoVM.PrecoVenda
+        };
+
         if (id != produto.ProdutoId)
         {
             return BadRequest("01xE4 - Id diferente do Id da produto");

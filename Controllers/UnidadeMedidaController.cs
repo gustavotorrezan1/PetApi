@@ -57,7 +57,7 @@ public class UnidadeMedidaController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<UnidadeMedida>> PostUnidadeMedida(PostUnidadeMedidaVM unidadeMedidaVM)
+    public async Task<ActionResult<UnidadeMedida>> PostUnidadeMedida(CreateUnidadeMedidaVM unidadeMedidaVM)
     {
         if (_context.UnidadeMedidas == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Categoria' é nula.");

@@ -1,6 +1,6 @@
 namespace PetApi.ViewModels.ProdutoVM;
 
-public class PostProdutoVM{
+public class CreateProdutoVM{
 
     public string? Nome { get; set; }
     public double PrecoCusto { get; set; }

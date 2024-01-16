@@ -1,5 +1,5 @@
 namespace PetApi.ViewModels.CategoriaVM;
 
-public class PostCategoriaVM{
+public class CreateCategoriaVM{
     public string? Nome { get; set; }
 }

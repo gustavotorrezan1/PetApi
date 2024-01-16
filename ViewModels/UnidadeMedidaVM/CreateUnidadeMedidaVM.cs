@@ -1,6 +1,6 @@
 namespace PetApi.ViewModels.UnidadeMedidaVM;
 
-public class PostUnidadeMedidaVM{
+public class CreateUnidadeMedidaVM{
     public string? Nome { get; set; }
     public string? Sigla { get; set; }
 }

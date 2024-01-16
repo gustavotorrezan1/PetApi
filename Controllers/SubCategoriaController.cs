@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
-using PetApi.ViewModels.CategoriaVM;
 using PetApi.ViewModels.SubcategoriaVM;
 
 namespace PetApi.Controllers;
@@ -44,15 +43,15 @@ public class SubCategoriaController : ControllerBase
         try
         {
             var subCategoria = await _context.SubCategorias.FindAsync(id);
+            if (subCategoria == null)
+                return Problem("Subcategoria nula");
+
             var categoria = await _context.Categorias.FindAsync(subCategoria.CategoriaId);
             subCategoria.Categoria = categoria;
             
-            if (subCategoria == null)
-                return NotFound();
-            
             return subCategoria;
         }
-        catch 
+        catch
         {
             return StatusCode(500);
         }
@@ -61,7 +60,7 @@ public class SubCategoriaController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<SubCategoria>> PostSubCategoria(PostSubCategoriaVM subcategoriaVM)
+    public async Task<ActionResult<SubCategoria>> PostSubCategoria(CreateSubcategoriaVM subcategoriaVM)
     {
         if (_context.SubCategorias == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.SubCategoria' é nula.");
@@ -85,11 +84,19 @@ public class SubCategoriaController : ControllerBase
 
     // PUT:
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, SubCategoria subcategoria)
+    public async Task<IActionResult> Put(int id, UpdateSubcategoriaVM subcategoriaVM)
     {
-        if (id != subcategoria.SubCategoriaId)
-            return BadRequest("01xE4 - Id diferente do Id da subcategoria");
-        
+        var subcategoria = new SubCategoria
+        {
+            SubCategoriaId = id,
+            Ativo = subcategoriaVM.Ativo,
+            Nome = subcategoriaVM.Nome,
+            CategoriaId = subcategoriaVM.CategoriaId
+        };
+
+        // se o CategoriaId for 0, ele pega o CategoriaId atual e coloca no lugar do CategoriaId = 0
+        if (subcategoria.CategoriaId == 0)
+            subcategoria.CategoriaId = await _context.SubCategorias.Where(x => x.SubCategoriaId == id).Select(x => x.CategoriaId).FirstOrDefaultAsync();
 
         _context.Entry(subcategoria).State = EntityState.Modified;
 

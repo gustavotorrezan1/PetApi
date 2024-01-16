@@ -57,7 +57,7 @@ public class CategoriaController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<Categoria>> PostCategoria(PostCategoriaVM categoriaVM)
+    public async Task<ActionResult<Categoria>> PostCategoria(CreateCategoriaVM categoriaVM)
     {
         if (_context.Categorias == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Categoria' é nula.");
@@ -76,10 +76,19 @@ public class CategoriaController : ControllerBase
 
     // PUT:
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, Categoria categoria)
+    public async Task<IActionResult> Put(int id, UpdateCategoriaVM categoriaVM)
     {
+        var categoria = new Categoria
+        {
+            CategoriaId = id,
+            Nome = categoriaVM.Nome,
+            Ativo = categoriaVM.Ativo
+        };
+
         if (id != categoria.CategoriaId)
             return BadRequest("01xE4 - Id diferente do Id da categoria");
+
+
         
 
         _context.Entry(categoria).State = EntityState.Modified;
