@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels.ProdutoVM;
 
 namespace PetApi.Controllers;
 
@@ -41,6 +42,9 @@ public class ProdutoController : ControllerBase
         try
         {
             var Produto = await _context.Produtos.FindAsync(id);
+            Produto.Categoria = await _context.Categorias.FindAsync(Produto.CategoriaId);
+            Produto.SubCategoria = await _context.SubCategorias.FindAsync(Produto.SubCategoriaId);
+            Produto.UnidadeMedida = await _context.UnidadeMedidas.FindAsync(Produto.UnidadeMedidaId);
 
             if (Produto == null)
                 return NotFound();
@@ -56,10 +60,24 @@ public class ProdutoController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<Produto>> PostProduto(Produto produto)
+    public async Task<ActionResult<Produto>> PostProduto(PostProdutoVM produtoVM)
     {
         if (_context.Produtos == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Produto' é nula.");
+
+        var produto = new Produto{
+            ProdutoId = 0,
+            Ativo = 0,
+            Nome = produtoVM.Nome,
+            PrecoCusto = produtoVM.PrecoCusto,
+            PrecoVenda = produtoVM.PrecoVenda,
+            CategoriaId = produtoVM.CategoriaId,
+            UnidadeMedidaId = produtoVM.UnidadeMedidaId,
+            SubCategoriaId = produtoVM.SubCategoriaId,
+            Categoria = await _context.Categorias.FindAsync(produtoVM.CategoriaId),
+            UnidadeMedida = await _context.UnidadeMedidas.FindAsync(produtoVM.UnidadeMedidaId),
+            SubCategoria = await _context.SubCategorias.FindAsync(produtoVM.SubCategoriaId)
+        };
         
         _context.Produtos.Add(produto);
         await _context.SaveChangesAsync();

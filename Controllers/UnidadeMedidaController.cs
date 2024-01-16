@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels.UnidadeMedidaVM;
 
 namespace PetApi.Controllers;
 
@@ -56,10 +57,17 @@ public class UnidadeMedidaController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<UnidadeMedida>> PostUnidadeMedida(UnidadeMedida unidadeMedida)
+    public async Task<ActionResult<UnidadeMedida>> PostUnidadeMedida(PostUnidadeMedidaVM unidadeMedidaVM)
     {
         if (_context.UnidadeMedidas == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Categoria' é nula.");
+
+        var unidadeMedida = new UnidadeMedida{
+            UnidadeMedidaId = 0,
+            Ativo = 0,
+            Nome = unidadeMedidaVM.Nome,
+            Sigla = unidadeMedidaVM.Sigla      
+        };
 
         _context.UnidadeMedidas.Add(unidadeMedida);
         await _context.SaveChangesAsync();

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels.CategoriaVM;
+using PetApi.ViewModels.SubcategoriaVM;
 
 namespace PetApi.Controllers;
 
@@ -59,18 +61,22 @@ public class SubCategoriaController : ControllerBase
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<SubCategoria>> PostSubCategoria(SubCategoria subcategoria)
+    public async Task<ActionResult<SubCategoria>> PostSubCategoria(PostSubCategoriaVM subcategoriaVM)
     {
         if (_context.SubCategorias == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.SubCategoria' é nula.");
 
-        var categoria = await _context.Categorias.FindAsync(subcategoria.CategoriaId);
-
-        if(categoria == null)
+        var subcategoria = new SubCategoria{
+            SubCategoriaId = 0,
+            Ativo = 0,
+            Nome = subcategoriaVM.Nome,
+            CategoriaId = subcategoriaVM.CategoriaId,
+            Categoria = await _context.Categorias.FindAsync(subcategoriaVM.CategoriaId)
+        };    
+        
+        if(subcategoria.Categoria == null)
             return Problem("Categoria não existe");
 
-        subcategoria.CategoriaId = categoria.CategoriaId;
-        subcategoria.Categoria = categoria;
         _context.SubCategorias.Add(subcategoria);
         await _context.SaveChangesAsync();
 
@@ -82,9 +88,8 @@ public class SubCategoriaController : ControllerBase
     public async Task<IActionResult> Put(int id, SubCategoria subcategoria)
     {
         if (id != subcategoria.SubCategoriaId)
-        {
             return BadRequest("01xE4 - Id diferente do Id da subcategoria");
-        }
+        
 
         _context.Entry(subcategoria).State = EntityState.Modified;
 

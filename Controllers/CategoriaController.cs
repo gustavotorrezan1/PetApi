@@ -79,9 +79,8 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> Put(int id, Categoria categoria)
     {
         if (id != categoria.CategoriaId)
-        {
             return BadRequest("01xE4 - Id diferente do Id da categoria");
-        }
+        
 
         _context.Entry(categoria).State = EntityState.Modified;
 
