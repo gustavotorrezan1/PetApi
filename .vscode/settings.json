@@ -1,4 +1,11 @@
 {
+    "editor.lineHeight": 1.8,
+    "editor.rulers": [80,120],
+    "editor.renderLineHighlight": "gutter",
+    "editor.fontLigatures": true,
+    "workbench.editor.labelFormat": "short",
+    "explorer.compactFolders": true, 
+    "editor.minimap.enabled": false,
     "dataworkspace.excludedProjects": [
         "PetV2/PetV2.sqlproj"
     ]
