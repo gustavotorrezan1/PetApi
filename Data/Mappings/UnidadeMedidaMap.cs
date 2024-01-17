@@ -21,6 +21,5 @@ public class UnidadeMedidaMap : IEntityTypeConfiguration<UnidadeMedida>
             .HasColumnType("INT")
             .HasMaxLength(1)
             .HasDefaultValue(1);
-
     }
 }

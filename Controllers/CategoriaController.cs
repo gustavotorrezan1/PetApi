@@ -24,9 +24,8 @@ public class CategoriaController : ControllerBase
         try
         {
             if (_context.Categorias == null)
-            {
                 return NotFound();
-            }
+            
             return await _context.Categorias.ToListAsync();
         }
         catch(Exception e)
@@ -52,7 +51,7 @@ public class CategoriaController : ControllerBase
         {
             return StatusCode(500);
         }
-       
+
     }
 
     // POST
@@ -88,9 +87,6 @@ public class CategoriaController : ControllerBase
         if (id != categoria.CategoriaId)
             return BadRequest("01xE4 - Id diferente do Id da categoria");
 
-
-        
-
         _context.Entry(categoria).State = EntityState.Modified;
 
         try
@@ -101,12 +97,10 @@ public class CategoriaController : ControllerBase
         {
             if (!CategoriaExists(id))
                 return NotFound("");
-            
-
+    
             return BadRequest("01xE5 - Falha ao alterar categoria");
             
         }
-
         return NoContent();
     }
 
@@ -115,15 +109,13 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> DeleteCategoria(int id)
     {
         if (_context.Categorias == null)
-        {
             return NotFound();
-        }
+        
         var categoria = await _context.Categorias.FindAsync(id);
-        if (categoria == null)
-        {
-            return NotFound();
-        }
 
+        if (categoria == null)
+             return NotFound();
+        
         _context.Categorias.Remove(categoria);
         await _context.SaveChangesAsync();
 

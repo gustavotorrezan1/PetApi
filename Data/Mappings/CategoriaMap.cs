@@ -20,5 +20,5 @@ public class CategoriaMap : IEntityTypeConfiguration<Categoria>
             .HasColumnType("INT")
             .HasMaxLength(1)
             .HasDefaultValue(1);
-            }
+    }
 }

@@ -20,9 +20,5 @@ public class SubCategoriaMap : IEntityTypeConfiguration<SubCategoria>
            .HasColumnType("INT")
            .HasMaxLength(1)
            .HasDefaultValue(1);
-
-        
-
-
     }
 }

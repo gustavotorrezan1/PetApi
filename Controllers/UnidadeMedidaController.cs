@@ -24,16 +24,14 @@ public class UnidadeMedidaController : ControllerBase
         try
         {
             if (_context.UnidadeMedidas == null)
-            {
                 return NotFound();
-            }
+
             return await _context.UnidadeMedidas.ToListAsync();
         }
         catch (Exception e)
         {
             return StatusCode(500, e);
         }
-
     }
     // GET BY ID:
     [HttpGet("{id}")]
@@ -42,7 +40,6 @@ public class UnidadeMedidaController : ControllerBase
         try
         {
             var UnidadeMedida = await _context.UnidadeMedidas.FindAsync(id);
-
             if (UnidadeMedida == null)
                 return NotFound();
 
@@ -52,9 +49,7 @@ public class UnidadeMedidaController : ControllerBase
         {
             return StatusCode(500);
         }
-
     }
-
     // POST
     [HttpPost]
     public async Task<ActionResult<UnidadeMedida>> PostUnidadeMedida(CreateUnidadeMedidaVM unidadeMedidaVM)
@@ -74,15 +69,12 @@ public class UnidadeMedidaController : ControllerBase
 
         return CreatedAtAction("GetUnidadeMedida", new { id = unidadeMedida.UnidadeMedidaId }, unidadeMedida);
     }
-
     // PUT:
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, UnidadeMedida unidadeMedida)
     {
         if (id != unidadeMedida.UnidadeMedidaId)
-        {
             return BadRequest("01xE4 - Id diferente do Id da Unidade Medida");
-        }
 
         _context.Entry(unidadeMedida).State = EntityState.Modified;
 
@@ -95,9 +87,7 @@ public class UnidadeMedidaController : ControllerBase
             if (!UnidadeMedidaExists(id))
                 return NotFound("");
 
-
             return BadRequest("01xE5 - Falha ao alterar categoria");
-
         }
 
         return NoContent();
@@ -108,14 +98,11 @@ public class UnidadeMedidaController : ControllerBase
     public async Task<IActionResult> DeleteUnidadeMedida(int id)
     {
         if (_context.UnidadeMedidas == null)
-        {
             return NotFound();
-        }
+        
         var unidadeMedida = await _context.UnidadeMedidas.FindAsync(id);
         if (unidadeMedida == null)
-        {
             return NotFound();
-        }
 
         _context.UnidadeMedidas.Remove(unidadeMedida);
         await _context.SaveChangesAsync();

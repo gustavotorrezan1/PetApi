@@ -25,9 +25,8 @@ public class ProdutoController : ControllerBase
         try
         {
             if (_context.Produtos == null)
-            {
                 return NotFound();
-            }
+            
             return await _context.Produtos.ToListAsync();
         }
         catch(Exception e)
@@ -43,12 +42,12 @@ public class ProdutoController : ControllerBase
         try
         {
             var Produto = await _context.Produtos.FindAsync(id);
+             if (Produto == null)
+                return NotFound();
+
             Produto.Categoria = await _context.Categorias.FindAsync(Produto.CategoriaId);
             Produto.SubCategoria = await _context.SubCategorias.FindAsync(Produto.SubCategoriaId);
             Produto.UnidadeMedida = await _context.UnidadeMedidas.FindAsync(Produto.UnidadeMedidaId);
-
-            if (Produto == null)
-                return NotFound();
             
             return Produto;
         }
@@ -99,10 +98,8 @@ public class ProdutoController : ControllerBase
         };
 
         if (id != produto.ProdutoId)
-        {
             return BadRequest("01xE4 - Id diferente do Id da produto");
-        }
-
+        
         _context.Entry(produto).State = EntityState.Modified;
 
         try
@@ -113,10 +110,8 @@ public class ProdutoController : ControllerBase
         {
             if (!ProdutoExists(id))
                 return NotFound("");
-            
 
             return BadRequest("01xE5 - Falha ao alterar produto");
-            
         }
 
         return NoContent();
@@ -127,15 +122,13 @@ public class ProdutoController : ControllerBase
     public async Task<IActionResult> DeleteProduto(int id)
     {
         if (_context.Produtos == null)
-        {
             return NotFound();
-        }
+        
         var produto = await _context.Produtos.FindAsync(id);
-        if (produto == null)
-        {
-            return NotFound();
-        }
 
+        if (produto == null)
+            return NotFound();
+        
         _context.Produtos.Remove(produto);
         await _context.SaveChangesAsync();
 
@@ -145,8 +138,5 @@ public class ProdutoController : ControllerBase
     {
         return (_context.Produtos?.Any(e => e.ProdutoId == id)).GetValueOrDefault();
     }
-
-
-
-
+    
 }

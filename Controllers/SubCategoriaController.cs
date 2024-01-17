@@ -24,9 +24,7 @@ public class SubCategoriaController : ControllerBase
         try
         {
             if (_context.SubCategorias == null)
-            {
                 return NotFound();
-            }
             
             return await _context.SubCategorias.ToListAsync();
         }
@@ -109,7 +107,6 @@ public class SubCategoriaController : ControllerBase
             if (!SubCategoriaExists(id))
                 return NotFound("");
             
-
             return BadRequest("01xE5 - Falha ao alterar subcategoria");
             
         }
@@ -122,14 +119,11 @@ public class SubCategoriaController : ControllerBase
     public async Task<IActionResult> DeleteSubCategoria(int id)
     {
         if (_context.SubCategorias == null)
-        {
             return NotFound();
-        }
+        
         var subcategoria = await _context.SubCategorias.FindAsync(id);
         if (subcategoria == null)
-        {
             return NotFound();
-        }
 
         _context.SubCategorias.Remove(subcategoria);
         await _context.SaveChangesAsync();

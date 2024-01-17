@@ -32,8 +32,5 @@ public class ProdutoMap : IEntityTypeConfiguration<Produto>
             .HasColumnType("INT")
             .HasMaxLength(1)
             .HasDefaultValue(1);
-
-
-
     }
 }
