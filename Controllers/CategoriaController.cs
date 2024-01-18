@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels;
 using PetApi.ViewModels.CategoriaVM;
 
 namespace PetApi.Controllers;
 
 [ApiController]
 [Route("v1/categoria")]
-public class CategoriaController : ControllerBase    
+public class CategoriaController : ControllerBase
 {
     private readonly PetDbContext _context;
 
@@ -17,20 +18,32 @@ public class CategoriaController : ControllerBase
         _context = context;
     }
 
+    string[] CategoriaErro =
+    {
+        "CatxE01 = Categoria não encontrada",
+        "CatxE02 = falha interna no servidor" 
+    };
+
+    
     // GET ALL:
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
     {
+        if(!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Categoria>(CategoriaErro[2]));
+
         try
         {
             if (_context.Categorias == null)
                 return NotFound();
-            
-            return await _context.Categorias.ToListAsync();
+
+            var categorias = await _context.Categorias.ToListAsync();
+
+            return Ok(new ResultViewModel<List<Categoria>>(categorias));
         }
-        catch(Exception e)
+        catch
         {
-            return StatusCode(500, e);
+            return StatusCode(500, new ResultViewModel<List<Categoria>>(CategoriaErro[1]));
         }
        
     }
@@ -38,14 +51,17 @@ public class CategoriaController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Categoria>> GetCategoria(int id)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         try
         {
-            var Categoria = await _context.Categorias.FindAsync(id);
+            var categoria = await _context.Categorias.FindAsync(id);
 
-            if (Categoria == null)
+            if (categoria == null)
                 return NotFound();
             
-            return Categoria;
+            return Ok(new ResultViewModel<Categoria>(categoria));
         }
         catch 
         {
@@ -58,6 +74,9 @@ public class CategoriaController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Categoria>> PostCategoria(CreateCategoriaVM categoriaVM)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         if (_context.Categorias == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Categoria' é nula.");
         
@@ -77,6 +96,9 @@ public class CategoriaController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, UpdateCategoriaVM categoriaVM)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var categoria = new Categoria
         {
             CategoriaId = id,
@@ -108,6 +130,9 @@ public class CategoriaController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategoria(int id)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         if (_context.Categorias == null)
             return NotFound();
         

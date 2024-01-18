@@ -1,6 +1,5 @@
 {
     "editor.lineHeight": 1.8,
-    "editor.rulers": [80,120],
     "editor.renderLineHighlight": "gutter",
     "editor.fontLigatures": true,
     "workbench.editor.labelFormat": "short",
@@ -8,5 +7,9 @@
     "editor.minimap.enabled": false,
     "dataworkspace.excludedProjects": [
         "PetV2/PetV2.sqlproj"
-    ]
+    ],
+    "editor.cursorSmoothCaretAnimation": "explicit",
+    "editor.smoothScrolling": true,
+    "workbench.reduceMotion": "off",
+    "terminal.integrated.smoothScrolling": false
 }
