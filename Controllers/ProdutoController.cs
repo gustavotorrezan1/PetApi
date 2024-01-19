@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels;
 using PetApi.ViewModels.CategoriaVM;
 using PetApi.ViewModels.ProdutoVM;
 
@@ -25,35 +26,37 @@ public class ProdutoController : ControllerBase
         try
         {
             if (_context.Produtos == null)
-                return NotFound();
-            
-            return await _context.Produtos.ToListAsync();
+                return NotFound(new ResultViewModel<Produto>("Não existe nenhum produto"));
+            var produtos = await _context.Produtos.ToListAsync();
+            return Ok(new ResultViewModel<List<Produto>>(produtos));
         }
-        catch(Exception e)
+        catch
         {
-            return StatusCode(500, e);
+            return StatusCode(500, new ResultViewModel<Produto>("Falha interna do servidor"));
         }
-       
     }
     // GET BY ID:
     [HttpGet("{id}")]
     public async Task<ActionResult<Produto>> GetProduto(int id)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
+
         try
         {
-            var Produto = await _context.Produtos.FindAsync(id);
-             if (Produto == null)
-                return NotFound();
+            var produto = await _context.Produtos.FindAsync(id);
+             if (produto == null)
+                return NotFound(new ResultViewModel<Produto>("Não existe nenhum produto"));
 
-            Produto.Categoria = await _context.Categorias.FindAsync(Produto.CategoriaId);
-            Produto.SubCategoria = await _context.SubCategorias.FindAsync(Produto.SubCategoriaId);
-            Produto.UnidadeMedida = await _context.UnidadeMedidas.FindAsync(Produto.UnidadeMedidaId);
+            produto.Categoria = await _context.Categorias.FindAsync(produto.CategoriaId);
+            produto.SubCategoria = await _context.SubCategorias.FindAsync(produto.SubCategoriaId);
+            produto.UnidadeMedida = await _context.UnidadeMedidas.FindAsync(produto.UnidadeMedidaId);
             
-            return Produto;
+            return Ok(new ResultViewModel<Produto>(produto));
         }
         catch 
         {
-            return StatusCode(500);
+            return StatusCode(500, new ResultViewModel<Produto>("Falha interna do servidor"));
         }
        
     }
@@ -62,33 +65,45 @@ public class ProdutoController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Produto>> PostProduto(CreateProdutoVM produtoVM)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
+
         if (_context.Produtos == null)
             return Problem("Entidade adiciona 'ApplicationDbContext.Produto' é nula.");
+        try
+        {
+            var produto = new Produto
+            {
+                ProdutoId = 0,
+                Ativo = 0,
+                Nome = produtoVM.Nome,
+                PrecoCusto = produtoVM.PrecoCusto,
+                PrecoVenda = produtoVM.PrecoVenda,
+                CategoriaId = produtoVM.CategoriaId,
+                UnidadeMedidaId = produtoVM.UnidadeMedidaId,
+                SubCategoriaId = produtoVM.SubCategoriaId,
+                Categoria = await _context.Categorias.FindAsync(produtoVM.CategoriaId),
+                UnidadeMedida = await _context.UnidadeMedidas.FindAsync(produtoVM.UnidadeMedidaId),
+                SubCategoria = await _context.SubCategorias.FindAsync(produtoVM.SubCategoriaId)
+            };
 
-        var produto = new Produto{
-            ProdutoId = 0,
-            Ativo = 0,
-            Nome = produtoVM.Nome,
-            PrecoCusto = produtoVM.PrecoCusto,
-            PrecoVenda = produtoVM.PrecoVenda,
-            CategoriaId = produtoVM.CategoriaId,
-            UnidadeMedidaId = produtoVM.UnidadeMedidaId,
-            SubCategoriaId = produtoVM.SubCategoriaId,
-            Categoria = await _context.Categorias.FindAsync(produtoVM.CategoriaId),
-            UnidadeMedida = await _context.UnidadeMedidas.FindAsync(produtoVM.UnidadeMedidaId),
-            SubCategoria = await _context.SubCategorias.FindAsync(produtoVM.SubCategoriaId)
-        };
-        
-        _context.Produtos.Add(produto);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetProduto", new { id = produto.ProdutoId }, produto);
+            _context.Produtos.Add(produto);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetProduto", new { id = produto.ProdutoId }, new ResultViewModel<Produto>(produto));
+        }
+        catch
+        {
+             return StatusCode(500, new ResultViewModel<Produto>("Falha interna do servidor"));
+        }
     }
 
     // PUT:
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, UpdateProdutoVM produtoVM)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
+
         var produto = new Produto
         {
             Ativo = produtoVM.Ativo,
@@ -98,7 +113,7 @@ public class ProdutoController : ControllerBase
         };
 
         if (id != produto.ProdutoId)
-            return BadRequest("01xE4 - Id diferente do Id da produto");
+            return BadRequest(new ResultViewModel<Categoria>(""));
         
         _context.Entry(produto).State = EntityState.Modified;
 
@@ -109,30 +124,39 @@ public class ProdutoController : ControllerBase
         catch (DbUpdateConcurrencyException)
         {
             if (!ProdutoExists(id))
-                return NotFound("");
+                return NotFound(new ResultViewModel<Produto>("Produto não encontrado"));
 
-            return BadRequest("01xE5 - Falha ao alterar produto");
+            return BadRequest(new ResultViewModel<Produto>("Falha ao alterar produto"));
         }
 
-        return NoContent();
+        return Ok(new ResultViewModel<Produto>("Produto excluído"));
     }
 
     //Delete
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduto(int id)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
+
         if (_context.Produtos == null)
-            return NotFound();
-        
-        var produto = await _context.Produtos.FindAsync(id);
+            return NotFound(new ResultViewModel<Produto>("Produto não encontrado"));
 
-        if (produto == null)
-            return NotFound();
-        
-        _context.Produtos.Remove(produto);
-        await _context.SaveChangesAsync();
+        try
+        {
+            var produto = await _context.Produtos.FindAsync(id);
 
-        return NoContent();
+            if (produto == null)
+                return NotFound(new ResultViewModel<Produto>("Produto não encontrado"));
+
+            _context.Produtos.Remove(produto);
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<Produto>("Erro ao excluir produto"));
+        }
+        return Ok(new ResultViewModel<Produto>("Produto excluída"));
     }
     private bool ProdutoExists(int id)
     {

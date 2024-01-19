@@ -65,7 +65,7 @@ public class CategoriaController : ControllerBase
     public async Task<ActionResult<Categoria>> PostCategoria(CreateCategoriaVM categoriaVM)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>("Dalha interna no servidor"));
+            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
 
         if (_context.Categorias == null)
             return BadRequest(new ResultViewModel<Categoria>("Categoria-E08 = Categoria é nula"));
@@ -97,7 +97,7 @@ public class CategoriaController : ControllerBase
         };
 
         if (id != categoria.CategoriaId)
-            return BadRequest("01xE4 - Id diferente do Id da categoria");
+            return BadRequest(new ResultViewModel<Categoria>(ModelState.GetErrors()));
 
         _context.Entry(categoria).State = EntityState.Modified;
 
@@ -108,9 +108,9 @@ public class CategoriaController : ControllerBase
         catch (DbUpdateConcurrencyException)
         {
             if (!CategoriaExists(id))
-                return NotFound("");
+                return NotFound(new ResultViewModel<Categoria>("Categoria não existe"));
     
-            return BadRequest("Falha ao alterar categoria");
+            return BadRequest(new ResultViewModel<Categoria>("Falha ao alterar categoria"));
             
         }
         return Ok(new ResultViewModel<Categoria>(categoria));
