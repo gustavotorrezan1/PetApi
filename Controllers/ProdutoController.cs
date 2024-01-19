@@ -40,8 +40,7 @@ public class ProdutoController : ControllerBase
     public async Task<ActionResult<Produto>> GetProduto(int id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
-
+            return BadRequest(new ResultViewModel<Produto>("Falha interna no servidor"));
         try
         {
             var produto = await _context.Produtos.FindAsync(id);
@@ -102,7 +101,7 @@ public class ProdutoController : ControllerBase
     public async Task<IActionResult> Put(int id, UpdateProdutoVM produtoVM)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
+            return BadRequest(new ResultViewModel<Produto>("Falha interna no servidor"));
 
         var produto = new Produto
         {
@@ -113,7 +112,7 @@ public class ProdutoController : ControllerBase
         };
 
         if (id != produto.ProdutoId)
-            return BadRequest(new ResultViewModel<Categoria>(""));
+            return BadRequest(new ResultViewModel<Produto>(""));
         
         _context.Entry(produto).State = EntityState.Modified;
 
@@ -129,7 +128,7 @@ public class ProdutoController : ControllerBase
             return BadRequest(new ResultViewModel<Produto>("Falha ao alterar produto"));
         }
 
-        return Ok(new ResultViewModel<Produto>("Produto excluído"));
+        return Ok(new ResultViewModel<Produto>("Produto alterado"));
     }
 
     //Delete
@@ -137,10 +136,10 @@ public class ProdutoController : ControllerBase
     public async Task<IActionResult> DeleteProduto(int id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>("Falha interna no servidor"));
+            return BadRequest(new ResultViewModel<Produto>("Falha interna no servidor"));
 
         if (_context.Produtos == null)
-            return NotFound(new ResultViewModel<Produto>("Produto não encontrado"));
+            return NotFound(new ResultViewModel<Produto>("Produto nulo"));
 
         try
         {
@@ -156,7 +155,7 @@ public class ProdutoController : ControllerBase
         {
             return StatusCode(500, new ResultViewModel<Produto>("Erro ao excluir produto"));
         }
-        return Ok(new ResultViewModel<Produto>("Produto excluída"));
+        return Ok(new ResultViewModel<Produto>("Produto excluído"));
     }
     private bool ProdutoExists(int id)
     {
