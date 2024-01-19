@@ -30,12 +30,12 @@ public class CategoriaController : ControllerBase
     public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
     {
         if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>(CategoriaErro[2]));
+            return BadRequest(new ResultViewModel<Categoria>("Categoria-E01 = falha interna no servidor"));
 
         try
         {
             if (_context.Categorias == null)
-                return NotFound();
+                return NotFound(new ResultViewModel<Categoria>("Categoria-E02 = falha interna no servidor"));
 
             var categorias = await _context.Categorias.ToListAsync();
 
@@ -43,7 +43,7 @@ public class CategoriaController : ControllerBase
         }
         catch
         {
-            return StatusCode(500, new ResultViewModel<List<Categoria>>(CategoriaErro[1]));
+            return StatusCode(500, new ResultViewModel<List<Categoria>>("Categoria-E03 = falha interna no servidor"));
         }
        
     }
@@ -52,20 +52,20 @@ public class CategoriaController : ControllerBase
     public async Task<ActionResult<Categoria>> GetCategoria(int id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return BadRequest(new ResultViewModel<Categoria>("Categoria-E04 = falha interna no servidor"));
 
         try
         {
             var categoria = await _context.Categorias.FindAsync(id);
 
             if (categoria == null)
-                return NotFound();
+                return NotFound(new ResultViewModel<Categoria>("Categoria-E05 = categoria é nula"));
             
             return Ok(new ResultViewModel<Categoria>(categoria));
         }
         catch 
         {
-            return StatusCode(500);
+            return StatusCode(500, new ResultViewModel<Categoria>("Categoria-E06 = falha interna no servidor"));
         }
 
     }
@@ -75,10 +75,10 @@ public class CategoriaController : ControllerBase
     public async Task<ActionResult<Categoria>> PostCategoria(CreateCategoriaVM categoriaVM)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return BadRequest(new ResultViewModel<Categoria>("Categoria-E07 = falha interna no servidor"));
 
         if (_context.Categorias == null)
-            return Problem("Entidade adiciona 'ApplicationDbContext.Categoria' é nula.");
+            return BadRequest(new ResultViewModel<Categoria>("Categoria-E08 = Categoria é nula"));
         
         var categoria = new Categoria{
             CategoriaId = 0,
