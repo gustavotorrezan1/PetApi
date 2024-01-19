@@ -127,6 +127,10 @@ public class ProdutoController : ControllerBase
 
             return BadRequest(new ResultViewModel<Produto>("Falha ao alterar produto"));
         }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<Produto>("Falha interna do servidor"));
+        }
 
         return Ok(new ResultViewModel<Produto>("Produto alterado"));
     }

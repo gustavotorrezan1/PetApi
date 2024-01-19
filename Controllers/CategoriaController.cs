@@ -57,7 +57,6 @@ public class CategoriaController : ControllerBase
         {
             return StatusCode(500, new ResultViewModel<Categoria>("Categoria-E06 = falha interna no servidor"));
         }
-
     }
 
     // POST
@@ -111,7 +110,10 @@ public class CategoriaController : ControllerBase
                 return NotFound(new ResultViewModel<Categoria>("Categoria não existe"));
     
             return BadRequest(new ResultViewModel<Categoria>("Falha ao alterar categoria"));
-            
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<Categoria>("Categoria-E06 = falha interna no servidor"));
         }
         return Ok(new ResultViewModel<Categoria>(categoria));
     }
