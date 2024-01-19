@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
+using PetApi.Extensions;
 using PetApi.Models;
 using PetApi.ViewModels;
 using PetApi.ViewModels.CategoriaVM;
@@ -17,21 +18,10 @@ public class CategoriaController : ControllerBase
     {
         _context = context;
     }
-
-    string[] CategoriaErro =
-    {
-        "CatxE01 = Categoria não encontrada",
-        "CatxE02 = falha interna no servidor" 
-    };
-
-    
     // GET ALL:
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
     {
-        if(!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>("Categoria-E01 = falha interna no servidor"));
-
         try
         {
             if (_context.Categorias == null)
@@ -75,7 +65,7 @@ public class CategoriaController : ControllerBase
     public async Task<ActionResult<Categoria>> PostCategoria(CreateCategoriaVM categoriaVM)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<Categoria>("Categoria-E07 = falha interna no servidor"));
+            return BadRequest(new ResultViewModel<Categoria>("Dalha interna no servidor"));
 
         if (_context.Categorias == null)
             return BadRequest(new ResultViewModel<Categoria>("Categoria-E08 = Categoria é nula"));
@@ -89,7 +79,7 @@ public class CategoriaController : ControllerBase
         _context.Categorias.Add(categoria);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
+        return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, new ResultViewModel<Categoria>(categoria));
     }
 
     // PUT:
@@ -97,7 +87,7 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> Put(int id, UpdateCategoriaVM categoriaVM)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return BadRequest(new ResultViewModel<Categoria>(ModelState.GetErrors()));
 
         var categoria = new Categoria
         {
@@ -120,10 +110,10 @@ public class CategoriaController : ControllerBase
             if (!CategoriaExists(id))
                 return NotFound("");
     
-            return BadRequest("01xE5 - Falha ao alterar categoria");
+            return BadRequest("Falha ao alterar categoria");
             
         }
-        return NoContent();
+        return Ok(new ResultViewModel<Categoria>(categoria));
     }
 
     //Delete
@@ -131,20 +121,24 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> DeleteCategoria(int id)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return BadRequest(new ResultViewModel<Categoria>("Erro"));
 
-        if (_context.Categorias == null)
-            return NotFound();
-        
-        var categoria = await _context.Categorias.FindAsync(id);
+        try
+        {
+            var categoria = await _context.Categorias.FindAsync(id);
+            
+            if(categoria == null)
+                return NotFound(new ResultViewModel<Categoria>("Categoria não encontrada"));
 
-        if (categoria == null)
-             return NotFound();
-        
-        _context.Categorias.Remove(categoria);
-        await _context.SaveChangesAsync();
+            _context.Categorias.Remove(categoria);
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<Categoria>("Erro ao excluir categoria"));
+        }
 
-        return NoContent();
+        return Ok(new ResultViewModel<Categoria>("Categoria excluída"));
     }
     private bool CategoriaExists(int id)
     {
