@@ -66,7 +66,8 @@ public class SubCategoriaController : ControllerBase
             return BadRequest(new ResultViewModel<SubCategoria>("Falha interna no servidor"));
 
         if (_context.SubCategorias == null)
-            return Problem("Entidade adiciona 'ApplicationDbContext.SubCategoria' é nula.");
+            return NotFound(new ResultViewModel<SubCategoria>("Subcategoria nula"));
+
         try
         {
             var subcategoria = new SubCategoria
@@ -119,7 +120,11 @@ public class SubCategoriaController : ControllerBase
             if (!SubCategoriaExists(id))
                 return NotFound(new ResultViewModel<SubCategoria>("Subcategoria não existe"));
 
-            return BadRequest(new ResultViewModel<Produto>("Falha ao alterar subcategoria"));
+            return BadRequest(new ResultViewModel<SubCategoria>("Falha ao alterar subcategoria"));
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<SubCategoria>("Falha interna do servidor"));
         }
 
         return Ok(new ResultViewModel<SubCategoria>("Subcategoria alterada"));
