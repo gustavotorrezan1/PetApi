@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetApi.Data;
 using PetApi.Models;
+using PetApi.ViewModels;
+using PetApi.ViewModels.SubcategoriaVM;
 
 namespace PetApi.Controllers;
 
@@ -23,14 +25,13 @@ public class SubCategoriaController : ControllerBase
         try
         {
             if (_context.SubCategorias == null)
-            {
-                return NotFound();
-            }
-            return await _context.SubCategorias.ToListAsync();
+                return NotFound(new ResultViewModel<SubCategoria>("Não existe nenhuma subcategoria"));
+            var subcategorias = await _context.SubCategorias.ToListAsync();
+            return Ok(new ResultViewModel<List<SubCategoria>>(subcategorias));
         }
-        catch(Exception e)
+        catch
         {
-            return StatusCode(500, e);
+            return StatusCode(500, new ResultViewModel<SubCategoria>("Falha interna do servidor"));
         }
        
     }
@@ -38,44 +39,75 @@ public class SubCategoriaController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<SubCategoria>> GetSubCategoria(int id)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<SubCategoria>("Falha interna no servidor"));
         try
         {
-            var SubCategoria = await _context.SubCategorias.FindAsync(id);
-            var Categoria = await _context.Categorias.FindAsync(SubCategoria.CategoriaId);
+            var subcategoria = await _context.SubCategorias.FindAsync(id);
+            if (subcategoria == null)
+                return NotFound(new ResultViewModel<SubCategoria>("Não existe essa subcategoria"));
 
-            if (SubCategoria == null)
-                return NotFound();
-            
-            return SubCategoria;
+            var categoria = await _context.Categorias.FindAsync(subcategoria.CategoriaId);
+            subcategoria.Categoria = categoria;
+
+            return Ok(new ResultViewModel<SubCategoria>(subcategoria));
         }
-        catch 
+        catch
         {
-            return StatusCode(500);
-        }
-       
+            return StatusCode(500, new ResultViewModel<SubCategoria>("Falha interna do servidor"));
+        } 
     }
 
     // POST
     [HttpPost]
-    public async Task<ActionResult<SubCategoria>> PostSubCategoria(SubCategoria subcategoria)
+    public async Task<ActionResult<SubCategoria>> PostSubCategoria(CreateSubcategoriaVM subcategoriaVM)
     {
-        if (_context.SubCategorias == null)
-            return Problem("Entidade adiciona 'ApplicationDbContext.SubCategoria' é nula.");
-        
-        _context.SubCategorias.Add(subcategoria);
-        await _context.SaveChangesAsync();
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<SubCategoria>("Falha interna no servidor"));
 
-        return CreatedAtAction("GetSubCategoria", new { id = subcategoria.SubCategoriaId }, subcategoria);
+        if (_context.SubCategorias == null)
+            return NotFound(new ResultViewModel<SubCategoria>("Subcategoria nula"));
+
+        try
+        {
+            var subcategoria = new SubCategoria
+            {
+                SubCategoriaId = 0,
+                Ativo = 0,
+                Nome = subcategoriaVM.Nome,
+                CategoriaId = subcategoriaVM.CategoriaId,
+                Categoria = await _context.Categorias.FindAsync(subcategoriaVM.CategoriaId)
+            };
+
+            _context.SubCategorias.Add(subcategoria);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetSubCategoria", new { id = subcategoria.SubCategoriaId }, new ResultViewModel<SubCategoria>(subcategoria));
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<SubCategoria>("Falha interna do servidor"));
+        }
     }
 
     // PUT:
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, SubCategoria subcategoria)
+    public async Task<IActionResult> Put(int id, UpdateSubcategoriaVM subcategoriaVM)
     {
-        if (id != subcategoria.SubCategoriaId)
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<SubCategoria>("Falha interna no servidor"));
+
+        var subcategoria = new SubCategoria
         {
-            return BadRequest("01xE4 - Id diferente do Id da subcategoria");
-        }
+            SubCategoriaId = id,
+            Ativo = subcategoriaVM.Ativo,
+            Nome = subcategoriaVM.Nome,
+            CategoriaId = subcategoriaVM.CategoriaId
+        };
+
+        // se o CategoriaId for 0, ele pega o CategoriaId atual e coloca no lugar do CategoriaId = 0
+        if (subcategoria.CategoriaId == 0)
+            subcategoria.CategoriaId = await _context.SubCategorias.Where(x => x.SubCategoriaId == id).Select(x => x.CategoriaId).FirstOrDefaultAsync();
 
         _context.Entry(subcategoria).State = EntityState.Modified;
 
@@ -86,34 +118,41 @@ public class SubCategoriaController : ControllerBase
         catch (DbUpdateConcurrencyException)
         {
             if (!SubCategoriaExists(id))
-                return NotFound("");
-            
+                return NotFound(new ResultViewModel<SubCategoria>("Subcategoria não existe"));
 
-            return BadRequest("01xE5 - Falha ao alterar subcategoria");
-            
+            return BadRequest(new ResultViewModel<SubCategoria>("Falha ao alterar subcategoria"));
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<SubCategoria>("Falha interna do servidor"));
         }
 
-        return NoContent();
+        return Ok(new ResultViewModel<SubCategoria>("Subcategoria alterada"));
     }
 
     //Delete
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSubCategoria(int id)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<SubCategoria>("Falha interna no servidor"));
+
         if (_context.SubCategorias == null)
+            return NotFound(new ResultViewModel<SubCategoria>("Subcategoria nula"));
+        try
         {
-            return NotFound();
+            var subcategoria = await _context.SubCategorias.FindAsync(id);
+            if (subcategoria == null)
+                return NotFound(new ResultViewModel<SubCategoria>("Subcategoria não encontrada"));
+
+            _context.SubCategorias.Remove(subcategoria);
+            await _context.SaveChangesAsync();
         }
-        var subcategoria = await _context.SubCategorias.FindAsync(id);
-        if (subcategoria == null)
+        catch
         {
-            return NotFound();
+            return StatusCode(500, new ResultViewModel<SubCategoria>("Falha interna do servidor"));
         }
-
-        _context.SubCategorias.Remove(subcategoria);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        return Ok(new ResultViewModel<SubCategoria>("Subcategoria excluída"));
     }
     private bool SubCategoriaExists(int id)
     {

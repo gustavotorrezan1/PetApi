@@ -17,7 +17,7 @@ namespace PetApi.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -31,11 +31,13 @@ namespace PetApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaId"));
 
                     b.Property<int>("Ativo")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(1)
-                        .HasColumnType("int");
+                        .HasColumnType("INT")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Nome")
-                        .IsRequired()
+                        .HasMaxLength(256)
                         .HasColumnType("NVARCHAR");
 
                     b.HasKey("CategoriaId");
@@ -52,29 +54,32 @@ namespace PetApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProdutoId"));
 
                     b.Property<int>("Ativo")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(1)
+                        .HasColumnType("INT")
+                        .HasDefaultValue(1);
 
-                    b.Property<int>("CategoriaId")
+                    b.Property<int?>("CategoriaId")
                         .HasColumnType("int");
 
                     b.Property<string>("CodBarras")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<double>("PrecoCusto")
-                        .HasColumnType("float");
+                        .HasColumnType("FLOAT");
 
                     b.Property<double>("PrecoVenda")
-                        .HasColumnType("float");
+                        .HasColumnType("FLOAT");
 
-                    b.Property<int>("SubCategoriaId")
+                    b.Property<int?>("SubCategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UnidadeMedidaId")
+                    b.Property<int?>("UnidadeMedidaId")
                         .HasColumnType("int");
 
                     b.HasKey("ProdutoId");
@@ -97,13 +102,17 @@ namespace PetApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubCategoriaId"));
 
                     b.Property<int>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(1)
+                        .HasColumnType("INT")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoriaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Nome")
-                        .HasColumnType("int");
+                    b.Property<string>("Nome")
+                        .HasMaxLength(256)
+                        .HasColumnType("NVARCHAR");
 
                     b.HasKey("SubCategoriaId");
 
@@ -121,10 +130,14 @@ namespace PetApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnidadeMedidaId"));
 
                     b.Property<int>("Ativo")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(1)
+                        .HasColumnType("INT")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<string>("Sigla")
                         .HasColumnType("nvarchar(max)");
@@ -138,21 +151,15 @@ namespace PetApi.Migrations
                 {
                     b.HasOne("PetApi.Models.Categoria", "Categoria")
                         .WithMany()
-                        .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoriaId");
 
                     b.HasOne("PetApi.Models.SubCategoria", "SubCategoria")
                         .WithMany()
-                        .HasForeignKey("SubCategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SubCategoriaId");
 
                     b.HasOne("PetApi.Models.UnidadeMedida", "UnidadeMedida")
                         .WithMany()
-                        .HasForeignKey("UnidadeMedidaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UnidadeMedidaId");
 
                     b.Navigation("Categoria");
 
@@ -165,7 +172,9 @@ namespace PetApi.Migrations
                 {
                     b.HasOne("PetApi.Models.Categoria", "Categoria")
                         .WithMany()
-                        .HasForeignKey("CategoriaId");
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Categoria");
                 });
