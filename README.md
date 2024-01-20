@@ -121,7 +121,3 @@ Você pode usar o Swagger UI ou qualquer cliente HTTP, como Postman ou Insomnia,
 [MIT]
 
 ```
-
-  
-
-Você pode copiar e colar esse código no seu repositório do GitHub ou usar algum editor online de markdown, como o [StackEdit], para visualizar o resultado. Espero que isso atenda às suas expectativas. 😊
