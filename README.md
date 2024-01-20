@@ -119,5 +119,3 @@ Você pode usar o Swagger UI ou qualquer cliente HTTP, como Postman ou Insomnia,
   
 
 [MIT]
-
-```
