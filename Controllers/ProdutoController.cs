@@ -27,12 +27,16 @@ public class ProdutoController : ControllerBase
         {
             if (_context.Produtos == null)
                 return NotFound(new ResultViewModel<Produto>("Não existe nenhum produto"));
-            var produtos = await _context.Produtos.ToListAsync();
+            var produtos = await _context.Produtos
+            .Include(x => x.Categoria)
+            .Include(x => x.UnidadeMedida)
+            .Include(x => x.SubCategoria)
+            .ToListAsync();
             return Ok(new ResultViewModel<List<Produto>>(produtos));
         }
-        catch
+        catch(Exception e)
         {
-            return StatusCode(500, new ResultViewModel<Produto>("Falha interna do servidor"));
+            return StatusCode(500, new ResultViewModel<Produto>(e.ToString()));
         }
     }
     // GET BY ID:
@@ -43,14 +47,15 @@ public class ProdutoController : ControllerBase
             return BadRequest(new ResultViewModel<Produto>("Falha interna no servidor"));
         try
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await _context.Produtos
+            .Include(x => x.Categoria)
+            .Include(x => x.UnidadeMedida)
+            .Include(x => x.SubCategoria)
+            .FirstOrDefaultAsync(x => x.ProdutoId == id);
+            
              if (produto == null)
                 return NotFound(new ResultViewModel<Produto>("Não existe nenhum produto"));
-
-            produto.Categoria = await _context.Categorias.FindAsync(produto.CategoriaId);
-            produto.SubCategoria = await _context.SubCategorias.FindAsync(produto.SubCategoriaId);
-            produto.UnidadeMedida = await _context.UnidadeMedidas.FindAsync(produto.UnidadeMedidaId);
-            
+                
             return Ok(new ResultViewModel<Produto>(produto));
         }
         catch 

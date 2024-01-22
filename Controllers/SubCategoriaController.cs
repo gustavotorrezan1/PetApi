@@ -26,7 +26,8 @@ public class SubCategoriaController : ControllerBase
         {
             if (_context.SubCategorias == null)
                 return NotFound(new ResultViewModel<SubCategoria>("Não existe nenhuma subcategoria"));
-            var subcategorias = await _context.SubCategorias.ToListAsync();
+                
+            var subcategorias = await _context.SubCategorias.Include(x => x.Categoria).ToListAsync();
             return Ok(new ResultViewModel<List<SubCategoria>>(subcategorias));
         }
         catch
@@ -43,12 +44,10 @@ public class SubCategoriaController : ControllerBase
             return BadRequest(new ResultViewModel<SubCategoria>("Falha interna no servidor"));
         try
         {
-            var subcategoria = await _context.SubCategorias.FindAsync(id);
+            var subcategoria = await _context.SubCategorias.Include(x => x.Categoria)
+            .FirstOrDefaultAsync(x => x.SubCategoriaId == id);
             if (subcategoria == null)
                 return NotFound(new ResultViewModel<SubCategoria>("Não existe essa subcategoria"));
-
-            var categoria = await _context.Categorias.FindAsync(subcategoria.CategoriaId);
-            subcategoria.Categoria = categoria;
 
             return Ok(new ResultViewModel<SubCategoria>(subcategoria));
         }
